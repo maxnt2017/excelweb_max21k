@@ -1,0 +1,195 @@
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Таблиця Excel-стилю | MaxNT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #a8e063, #56ab2f);
+      color: #333;
+      animation: fadeIn 1.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    header {
+      background-color: #2e7d32;
+      padding: 1rem;
+      text-align: center;
+      color: white;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .menu button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .menu button:hover {
+      background-color: #66bb6a;
+      transform: scale(1.05);
+    }
+
+    .palette, .fonts {
+      margin: 0.5rem auto;
+      text-align: center;
+    }
+
+    .palette input[type="color"] {
+      margin: 0 0.3rem;
+      cursor: pointer;
+    }
+
+    .fonts select {
+      padding: 0.3rem;
+      font-size: 1rem;
+      border-radius: 8px;
+    }
+
+    table {
+      margin: 1rem auto;
+      border-collapse: collapse;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    td, th {
+      border: 1px solid #ccc;
+      padding: 0.5rem 1rem;
+      text-align: center;
+      min-width: 100px;
+      background-color: white;
+    }
+
+    td:focus {
+      outline: none;
+      background-color: #e8f5e9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      background-color: #2e7d32;
+      color: white;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Редагована Таблиця | MaxNT
+  </header>
+
+  <div class="menu">
+    <button onclick="createTable()">Створити таблицю</button>
+    <button onclick="clearTable()">Очистити</button>
+    <button onclick="saveTable()">Зберегти</button>
+    <button onclick="deleteTable()">Видалити</button>
+    <button onclick="changeFontColor()">Колір шрифту</button>
+  </div>
+
+  <div class="palette">
+    <label>Палітра заливки: <input type="color" id="fillColor" onchange="applyFillColor()"></label>
+  </div>
+
+  <div class="fonts">
+    <label>Шрифт:
+      <select id="fontSelector" onchange="changeFont()">
+        <option value="Roboto">Roboto</option>
+        <option value="Arial">Arial</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Verdana">Verdana</option>
+      </select>
+    </label>
+  </div>
+
+  <section id="tableSection" style="text-align:center">
+    <table id="excelTable" contenteditable="true">
+      <tr><td>Значення</td><td>Значення</td></tr>
+      <tr><td>Значення</td><td>Значення</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    &copy; 2017–2025 MaxNT Official, всі права захищено.
+  </footer>
+
+  <script>
+    function createTable() {
+      const table = document.getElementById('excelTable');
+      table.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        let row = table.insertRow();
+        for (let j = 0; j < 5; j++) {
+          let cell = row.insertCell();
+          cell.contentEditable = true;
+          cell.innerText = 'Новий';
+        }
+      }
+    }
+
+    function clearTable() {
+      const cells = document.querySelectorAll('#excelTable td');
+      cells.forEach(cell => cell.innerText = '');
+    }
+
+    function saveTable() {
+      const table = document.getElementById('excelTable');
+      localStorage.setItem('savedTable', table.innerHTML);
+      alert('Таблицю збережено!');
+    }
+
+    function deleteTable() {
+      localStorage.removeItem('savedTable');
+      alert('Збережену таблицю видалено.');
+    }
+
+    function changeFontColor() {
+      const color = prompt('Введіть колір шрифту (наприклад: red або #ff0000):');
+      if (color) {
+        const cells = document.querySelectorAll('#excelTable td');
+        cells.forEach(cell => cell.style.color = color);
+      }
+    }
+
+    function applyFillColor() {
+      const color = document.getElementById('fillColor').value;
+      const cells = document.querySelectorAll('#excelTable td');
+      cells.forEach(cell => cell.style.backgroundColor = color);
+    }
+
+    function changeFont() {
+      const font = document.getElementById('fontSelector').value;
+      const table = document.getElementById('excelTable');
+      table.style.fontFamily = font;
+    }
+
+    window.onload = function() {
+      const saved = localStorage.getItem('savedTable');
+      if (saved) document.getElementById('excelTable').innerHTML = saved;
+    }
+  </script>
+</body>
+</html>
