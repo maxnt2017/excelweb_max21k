@@ -130,6 +130,10 @@
     <button onclick="saveTable()">Зберегти</button>
     <button onclick="deleteTable()">Видалити</button>
     <button onclick="changeFontColor()">Колір шрифту</button>
+    <button onclick="importCSV()">Імпорт CSV</button>
+    <button onclick="exportCSV()">Експорт CSV</button>
+    <button onclick="exportXLS()">Експорт XLS</button>
+    <button onclick="exportXLSX()">Експорт XLSX</button>
   </div>
 
   <div class="palette">
@@ -164,6 +168,7 @@
     &copy; 2017–2025 MaxNT Official, всі права захищено.
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script>
     function createTable() {
       const table = document.getElementById('excelTable');
@@ -232,6 +237,75 @@
         cell.contentEditable = true;
         cell.innerText = '';
       }
+    }
+
+    function tableToArray() {
+      const table = document.getElementById('excelTable');
+      const data = [];
+      for (let row of table.rows) {
+        const rowData = [];
+        for (let cell of row.cells) {
+          rowData.push(cell.innerText);
+        }
+        data.push(rowData);
+      }
+      return data;
+    }
+
+    function exportCSV() {
+      let csv = '';
+      const rows = document.querySelectorAll("#excelTable tr");
+      rows.forEach(row => {
+        const cols = row.querySelectorAll("td, th");
+        const data = Array.from(cols).map(cell => `"${cell.innerText.replace(/"/g, '""')}"`);
+        csv += data.join(',') + '\n';
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'table.csv';
+      link.click();
+    }
+
+    function exportXLS() {
+      const data = tableToArray();
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      XLSX.writeFile(workbook, 'table.xls', { bookType: 'xls' });
+    }
+
+    function exportXLSX() {
+      const data = tableToArray();
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      XLSX.writeFile(workbook, 'table.xlsx');
+    }
+
+    function importCSV() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.csv';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const rows = event.target.result.split("\n").filter(Boolean);
+          const table = document.getElementById('excelTable');
+          table.innerHTML = '';
+          rows.forEach(rowText => {
+            const row = table.insertRow();
+            rowText.split(',').forEach(cellText => {
+              const cell = row.insertCell();
+              cell.contentEditable = true;
+              cell.innerText = cellText.replace(/"/g, '');
+            });
+          });
+        };
+        reader.readAsText(file);
+      };
+      input.click();
     }
 
     window.onload = function() {
