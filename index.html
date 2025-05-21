@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Таблиця Excel-стилю | MT</title>
+  <title>Таблиця Excel-стилю | MaxNT</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -71,6 +72,7 @@
       margin: 1rem auto;
       border-collapse: collapse;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      table-layout: fixed;
     }
 
     td, th {
@@ -93,6 +95,27 @@
       background-color: #2e7d32;
       color: white;
       margin-top: 2rem;
+    }
+
+    .add-controls {
+      text-align: center;
+      margin: 1rem;
+    }
+
+    .add-controls button {
+      margin: 0.3rem;
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .add-controls button:hover {
+      background-color: #66bb6a;
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -123,6 +146,11 @@
         <option value="Verdana">Verdana</option>
       </select>
     </label>
+  </div>
+
+  <div class="add-controls">
+    <button onclick="addRow()">Додати рядок</button>
+    <button onclick="addColumn()">Додати стовпець</button>
   </div>
 
   <section id="tableSection" style="text-align:center">
@@ -184,6 +212,26 @@
       const font = document.getElementById('fontSelector').value;
       const table = document.getElementById('excelTable');
       table.style.fontFamily = font;
+    }
+
+    function addRow() {
+      const table = document.getElementById('excelTable');
+      const row = table.insertRow();
+      const cols = table.rows[0].cells.length;
+      for (let i = 0; i < cols; i++) {
+        let cell = row.insertCell();
+        cell.contentEditable = true;
+        cell.innerText = '';
+      }
+    }
+
+    function addColumn() {
+      const table = document.getElementById('excelTable');
+      for (let i = 0; i < table.rows.length; i++) {
+        let cell = table.rows[i].insertCell();
+        cell.contentEditable = true;
+        cell.innerText = '';
+      }
     }
 
     window.onload = function() {
